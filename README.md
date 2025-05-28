@@ -1,6 +1,7 @@
-# Web-leaderboard
+# Class Leaderboard
 ## Benefits:
 - Locally sotred data
+- Display rank in the class
 - Tempaltes for each class
 - Beautiful and responsive design
 - progress tracking  

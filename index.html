@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Leaderboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        /* Custom styles for the pill shape */
+        .student-pill {
+            background-color: #ccc; /* Default fallback */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            color: white; /* Ensure text color is white by default on colored pills */
+            font-weight: 600; /* Equivalent to font-semibold */
+            display: flex; /* Equivalent to flex */
+            align-items: center; /* Equivalent to items-center */
+            justify-content: space-between; /* Equivalent to justify-between */
+            padding: 0.75rem 1.5rem; /* Equivalent to p-3 */
+            margin-top: 0.5rem; /* Equivalent to my-2 */
+            margin-bottom: 0.5rem; /* Equivalent to my-2 */
+            border-radius: 50rem; /* Equivalent to rounded-full */
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Equivalent to shadow-md */
+            font-size: 1.25rem; /* Equivalent to text-lg */
+        }
+        /* Hover effect for pills */
+        .student-pill:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+        }
+
+        /* Special styling for Top 5 borders */
+        .rank-1 { border: 3px solid #FFD700; /* Gold */ }
+        .rank-2 { border: 3px solid #C0C0C0; /* Silver */ }
+        .rank-3 { border: 3px solid #CD7F32; /* Bronze */ }
+        /* Adjusted border color for ranks 4 and 5 for better visibility */
+        .rank-4 { border: 3px solid #CBD5E0; /* Lighter Gray */ }
+        .rank-5 { border: 3px solid #CBD5E0; /* Lighter Gray */ }
+
+        /* Optional: Add a subtle gradient for top 3 */
+        .rank-1 { background: linear-gradient(to right, #FFD700, hsl(50, 90%, 40%)); }
+        .rank-2 { background: linear-gradient(to right, #C0C0C0, hsl(0, 0%, 60%)); }
+        .rank-3 { background: linear-gradient(to right, #CD7F32, hsl(30, 60%, 40%)); }
+
+        /* Style for the rank badge inside the pill */
+        .rank-badge {
+            font-size: 0.7em;
+            opacity: 1;
+            margin-left: 0.5rem;
+            font-weight: 700;
+            color: #333; /* Darker text for contrast on a light badge */
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 0.1rem 0.4rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        /* Make score buttons wider */
+        .score-button {
+             padding: 0.5rem 1rem;
+             font-size: 1.5rem; /* Increased font size */
+             min-width: 2.5rem;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             border-radius: 50rem; /* Equivalent to rounded-full */
+             color: white; /* Ensure button text/icons are white */
+             background-color: rgba(255, 255, 255, 0.3); /* White with opacity */
+             border: none; /* Remove default button border */
+        }
+        .score-button:hover {
+            background-color: rgba(255, 255, 255, 0.5); /* Darker on hover */
+        }
+
+
+        /* Adjust spacing within the pill */
+        .student-pill .content-area {
+            flex-grow: 1;
+            text-align: left;
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+         .student-pill .score-area {
+             margin-left: 0.25rem;
+             margin-right: 0.5rem;
+             flex-shrink: 0;
+             font-size: 1.25rem; /* Equivalent to text-xl */
+         }
+
+         .student-pill .button-area {
+             margin-left: 1rem;
+             flex-shrink: 0;
+         }
+
+         /* Adjust spacing on the emoji */
+         .student-pill .emoji-span {
+             margin-right: 0.25rem;
+             flex-shrink: 0;
+         }
+
+         /* Styling for the Top 3 Horizontal Cards */
+         .top-3-container {
+             display: flex;
+             justify-content: center;
+             gap: 1rem;
+             margin-bottom: 2rem;
+             flex-wrap: wrap;
+             align-items: flex-end;
+         }
+
+         .top-3-card {
+             background-color: white;
+             border-radius: 1rem;
+             padding: 1.5rem;
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+             transition: transform 0.3s ease, box-shadow 0.3s ease;
+             flex-shrink: 0;
+         }
+         /* Hover effect for top 3 cards */
+         .top-3-card:hover {
+             transform: translateY(-8px) scale(1.02);
+             box-shadow: 0 1.25rem 1.875rem rgba(0, 0, 0, 0.2);
+         }
+
+
+         /* Proportional Sizing and Ordering for Top 3 Cards */
+         .top-3-card.rank-1 {
+             width: 40%;
+             min-height: 250px;
+             order: 1;
+         }
+         .top-3-card.rank-2 {
+             width: 25%;
+             min-height: 200px;
+             order: 2;
+         }
+         .top-3-card.rank-3 {
+             width: 25%;
+             min-height: 180px;
+             order: 3;
+         }
+
+         /* Responsive adjustments for Top 3 cards */
+         @media (max-width: 768px) {
+             .top-3-container {
+                 flex-direction: column;
+                 align-items: center;
+             }
+             .top-3-card.rank-1,
+             .top-3-card.rank-2,
+             .top-3-card.rank-3 {
+                 width: 80%;
+                 order: initial;
+                 min-height: auto;
+             }
+         }
+
+         .top-3-card .rank-icon {
+             font-size: 3.5rem;
+             margin-bottom: 0.5rem;
+         }
+
+         .top-3-card .student-emoji {
+             font-size: 3rem;
+             margin-bottom: 0.5rem;
+         }
+
+         .top-3-card .student-name {
+             font-size: 1.5rem;
+             font-weight: 700;
+             margin-bottom: 0.25rem;
+             color: #333;
+         }
+
+         .top-3-card .student-score {
+             font-size: 1.25rem;
+             color: #555;
+             margin-bottom: 1rem;
+         }
+
+         .top-3-card .button-area {
+             margin-top: 0.5rem;
+         }
+
+         /* Ensure text color is visible for ranks 4 and 5 pills */
+         .rank-4 span, .rank-5 span,
+         .rank-4 .rank-badge, .rank-5 .rank-badge {
+             color: #333; /* Dark gray text for better contrast */
+         }
+
+
+    </style>
+</head>
+<body class="d-flex vh-100 bg-light"> <div class="d-flex flex-column bg-white p-4 shadow-sm" style="width: 250px; min-width: 250px; overflow-y: auto;">
+        <h2 class="fs-4 fw-bold mb-4 text-dark">Controls</h2>
+
+        <div class="mb-4 pb-3 border-bottom border-light">
+            <label for="studentName" class="form-label text-secondary fw-bold mb-2">Add Student(s):</label>
+            <textarea
+                id="studentName"
+                placeholder="Enter student name(s), one per line"
+                class="form-control mb-2"
+                aria-label="Enter new student name(s), one per line"
+                rows="4"
+            ></textarea>
+            <button
+                id="addStudentBtn"
+                class="btn btn-primary fw-bold w-100"
+                aria-label="Add student(s)"
+            >
+                Add Student(s)
+            </button>
+        </div>
+
+        <div class="mb-4 pb-3 border-bottom border-light">
+            <label for="csvUpload" class="form-label text-secondary fw-bold mb-2">Upload CSV:</label>
+            <input
+                type="file"
+                id="csvUpload"
+                accept=".csv"
+                class="form-control mb-2"
+                aria-label="Select CSV file"
+            />
+            <button
+                id="addCsvStudentsBtn"
+                class="btn btn-success fw-bold w-100"
+                aria-label="Add students from CSV"
+                disabled
+            >
+                Add CSV Students
+            </button>
+            <p class="text-muted small mt-1">Format: name,score (one per line)</p>
+        </div>
+
+        <div class="mb-4 pb-3 border-bottom border-light">
+             <h3 class="fs-5 fw-bold mb-3 text-dark">Templates</h3>
+             <label for="templateName" class="form-label text-secondary fw-bold mb-2">Template Name:</label>
+             <input
+                 type="text"
+                 id="templateName"
+                 placeholder="Enter template name"
+                 class="form-control mb-2"
+                 aria-label="Enter template name"
+             />
+             <button
+                 id="saveTemplateBtn"
+                 class="btn btn-warning fw-bold w-100 mb-3"
+                 aria-label="Save current leaderboard as template"
+             >
+                 Save Template
+             </button>
+
+             <label for="templateSelect" class="form-label text-secondary fw-bold mb-2">Load Template:</label>
+             <select
+                 id="templateSelect"
+                 class="form-select mb-2"
+                 aria-label="Select a template to load"
+             >
+                 <option value="">--Select Template--</option>
+             </select>
+             <button
+                 id="loadTemplateBtn"
+                 class="btn btn-info fw-bold w-100 mb-2"
+                 aria-label="Load selected template"
+                 disabled
+             >
+                 Load Template
+             </button>
+             <button
+                 id="deleteTemplateBtn"
+                 class="btn btn-danger fw-bold w-100"
+                 aria-label="Delete selected template"
+                 disabled
+             >
+                 Delete Template
+             </button>
+        </div>
+
+        <div class="mt-auto pt-4 border-top border-light">
+             <button
+                 id="resetLeaderboardBtn"
+                 class="btn btn-secondary fw-bold w-100"
+                 aria-label="Reset leaderboard"
+             >
+                 Reset Leaderboard
+             </button>
+        </div>
+
+    </div>
+
+    <div class="flex-grow-1 p-4 overflow-y-auto">
+        <h1 class="fs-2 fw-bold mb-4 text-dark text-center">Leaderboard</h1>
+
+        <div id="top3Container" class="d-flex justify-content-center gap-3 mb-4 mx-auto" style="max-width: 900px;">
+            </div>
+         <p id="noTop3Message" class="text-center text-muted mb-4 d-none">Add more students to see the Top 3!</p>
+
+
+        <div id="leaderboardList" class="mx-auto" style="max-width: 600px;">
+            <p id="noStudentsMessage" class="text-center text-muted">No students added yet. Add students using the controls on the left.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        // Kid-safe emojis list - Updated with more variety including unicorn
+        const kidSafeEmojis = [
+            '👍', '🎉', '🌟', '🌈', '🚀', '🐱',
+            '🐶', '🐻', '🐼', '🦊', '🦁', '🐯', '🐸', '🐠', '🦋', 
+            '🌸', '🌻', '🌳', '🦄', '✨', '🎁', '🏆',
+            '👑', '💎', '💫',  '🎀', '🎊', '☀️', '🎊', '🎉', 
+        ];
+
+
+        // Function to get a random unique emoji
+        function getRandomUniqueEmoji(usedEmojis) {
+            const availableEmojis = kidSafeEmojis.filter(emoji => !usedEmojis.includes(emoji));
+            if (availableEmojis.length === 0) {
+                return '😀'; // Fallback emoji if all used
+            }
+            const randomIndex = Math.floor(Math.random() * availableEmojis.length);
+            return availableEmojis[randomIndex];
+        }
+
+        // Function to generate a random bright color with better contrast for white text
+        function getRandomColor(usedColors) {
+            let newColor;
+            let attempts = 0;
+            const maxAttempts = 100; // Prevent infinite loops
+
+            do {
+                const hue = Math.floor(Math.random() * 360);
+                const saturation = Math.floor(Math.random() * (95 - 70 + 1)) + 70; // 70-95% saturation
+                const lightness = Math.floor(Math.random() * (45 - 25 + 1)) + 25; // 25-45% lightness
+                newColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                attempts++;
+            } while (usedColors.includes(newColor) && attempts < maxAttempts);
+
+            // If after maxAttempts, a unique color is not found, return the last generated color (might be a repeat)
+            return newColor;
+        }
+
+        // Function to generate a unique ID (simple timestamp + random)
+        function generateUniqueId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Get references to HTML elements
+        const studentNameInput = document.getElementById('studentName');
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const csvUploadInput = document.getElementById('csvUpload');
+        const addCsvStudentsBtn = document.getElementById('addCsvStudentsBtn');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const top3Container = document.getElementById('top3Container'); // New reference for top 3 container
+        const noStudentsMessage = document.getElementById('noStudentsMessage');
+        const noTop3Message = document.getElementById('noTop3Message'); // Message for not enough students for Top 3
+        const resetLeaderboardBtn = document.getElementById('resetLeaderboardBtn');
+
+        // Template elements
+        const templateNameInput = document.getElementById('templateName');
+        const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+        const templateSelect = document.getElementById('templateSelect');
+        const loadTemplateBtn = document.getElementById('loadTemplateBtn');
+        const deleteTemplateBtn = document.getElementById('deleteTemplateBtn');
+
+
+        // Array to hold student data for the current leaderboard
+        let students = [];
+        // Variable to temporarily store parsed CSV data
+        let parsedCsvStudents = [];
+        // Object to hold saved templates { templateName: [studentData], ... }
+        let templates = {};
+
+        // --- Local Storage Functions ---
+
+        // Load students from local storage (current leaderboard)
+        function loadStudents() {
+            const savedStudents = localStorage.getItem('leaderboardStudents');
+            if (savedStudents) {
+                students = JSON.parse(savedStudents);
+            }
+            renderLeaderboard();
+        }
+
+        // Save students to local storage (current leaderboard)
+        function saveStudents() {
+            localStorage.setItem('leaderboardStudents', JSON.stringify(students));
+        }
+
+        // Load templates from local storage
+        function loadTemplates() {
+            const savedTemplates = localStorage.getItem('leaderboardTemplates');
+            if (savedTemplates) {
+                templates = JSON.parse(savedTemplates);
+            }
+            renderTemplateList();
+        }
+
+        // Save templates to local storage
+        function saveTemplates() {
+            localStorage.setItem('leaderboardTemplates', JSON.stringify(templates));
+        }
+
+        // --- Rendering Functions ---
+
+        // Render the leaderboard
+        function renderLeaderboard() {
+            // Sort students by score in descending order
+            const sortedStudents = [...students].sort((a, b) => b.score - a.score);
+
+            leaderboardList.innerHTML = ''; // Clear current regular list
+            top3Container.innerHTML = ''; // Clear current top 3 list
+
+            if (sortedStudents.length === 0) {
+                noStudentsMessage.classList.remove('d-none'); // Show message
+                noTop3Message.classList.add('d-none'); // Hide top 3 message if no students
+            } else {
+                noStudentsMessage.classList.add('d-none'); // Hide message
+
+                // Separate top 3 and the rest
+                const top3Students = sortedStudents.slice(0, 3);
+                const remainingStudents = sortedStudents.slice(3);
+
+                // Render Top 3 Cards
+                if (top3Students.length >= 3) {
+                    noTop3Message.classList.add('d-none'); // Hide message if top 3 exists
+                    top3Students.forEach((student, index) => {
+                        const rank = index + 1;
+                        let rankBadgeEmoji = '';
+                        // Use emoji badges for ranks 1, 2, 3
+                        if (rank === 1) rankBadgeEmoji = '🥇'; // Gold medal
+                        else if (rank === 2) rankBadgeEmoji = '🥈'; // Silver medal
+                        else if (rank === 3) rankBadgeEmoji = '🥉'; // Bronze medal
+
+                        const top3Card = document.createElement('div');
+                        // Using Bootstrap classes for layout and styling
+                        top3Card.classList.add('top-3-card', `rank-${rank}`, 'card', 'p-3', 'text-center');
+                        top3Card.setAttribute('aria-label', `Leaderboard entry for ${student.name}, Rank ${rank}`);
+
+
+                        top3Card.innerHTML = `
+                            <div class="rank-icon">${rankBadgeEmoji}</div>
+                            <span class="student-emoji display-4">${student.emoji}</span>
+                            <span class="student-name h5 fw-bold text-dark">${student.name}</span>
+                            <span class="student-score text-muted fs-5">Score: ${student.score}</span>
+                            <div class="button-area d-flex justify-content-center gap-2 mt-2">
+                                <button class="increment-btn score-button" data-id="${student.id}" aria-label="Increment score for ${student.name}">+</button>
+                                <button class="decrement-btn score-button" data-id="${student.id}" aria-label="Decrement score for ${student.name}">-</button>
+                            </div>
+                        `;
+                        top3Container.appendChild(top3Card);
+                    });
+                } else {
+                     noTop3Message.classList.remove('d-none'); // Show message if not enough students for Top 3
+                }
+
+
+                // Render Remaining Students (Rank 4 onwards)
+                remainingStudents.forEach((student, index) => {
+                    const studentPill = document.createElement('div');
+                    const rank = index + 4; // Start rank from 4 for remaining students
+
+                    // Add base pill classes
+                    studentPill.classList.add('student-pill'); // Custom class for pill styling
+
+                    // Apply rank-specific classes for ranks 4 and 5 (if they exist in remaining)
+                    if (rank <= 5) {
+                         studentPill.classList.add(`rank-${rank}`);
+                    }
+
+                    studentPill.style.backgroundColor = student.color;
+                    studentPill.setAttribute('aria-label', `Leaderboard entry for ${student.name}, Rank ${rank}`);
+
+                    // Determine rank text for ranks 4 and 5
+                    let rankText = '';
+                    if (rank === 4) rankText = '4th Place';
+                    else if (rank === 5) rankText = '5th Place';
+
+
+                    studentPill.innerHTML = `
+                        <span class="emoji-span me-2" role="img" aria-label="student emoji" style="font-size: 2rem;">${student.emoji}</span>
+                        <span class="content-area">${student.name} ${rankText ? `<span class="rank-badge">${rankText}</span>` : ''}</span>
+                        <span class="score-area">${student.score}</span>
+                        <div class="button-area d-flex gap-2">
+                            <button class="increment-btn score-button" data-id="${student.id}" aria-label="Increment score for ${student.name}">+</button>
+                            <button class="decrement-btn score-button" data-id="${student.id}" aria-label="Decrement score for ${student.name}">-</button>
+                        </div>
+                    `;
+
+                    leaderboardList.appendChild(studentPill);
+                });
+
+                 // Add event listeners using delegation to the main content area
+                 const mainContent = document.querySelector('.flex-grow-1'); // Get the main content area
+                 mainContent.removeEventListener('click', handleScoreButtonClick); // Prevent duplicate listeners
+                 mainContent.addEventListener('click', handleScoreButtonClick);
+
+            }
+        }
+
+         // Delegated event handler for score buttons
+         function handleScoreButtonClick(event) {
+             const target = event.target;
+             if (target.classList.contains('increment-btn')) {
+                 handleIncrement(target);
+             } else if (target.classList.contains('decrement-btn')) {
+                 handleDecrement(target);
+             }
+         }
+
+
+        // Render the list of saved templates in the select dropdown
+        function renderTemplateList() {
+            templateSelect.innerHTML = '<option value="">--Select Template--</option>'; // Clear current options
+            const templateNames = Object.keys(templates);
+            templateNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                templateSelect.appendChild(option);
+            });
+            // Disable load/delete buttons if no template is selected
+            loadTemplateBtn.disabled = true;
+            deleteTemplateBtn.disabled = true;
+        }
+
+        // --- Event Handlers ---
+
+        // Handle adding a student manually (now handles multiple names and sorts alphabetically)
+        function handleAddStudent() {
+            const namesText = studentNameInput.value.trim();
+            if (namesText) {
+                const names = namesText.split('\n').map(name => name.trim()).filter(name => name !== ''); // Split by line breaks and filter empty names
+                const newStudents = [];
+                const usedEmojis = students.map(s => s.emoji); // Get currently used emojis
+
+                names.forEach(name => {
+                    // Check if a student with this name already exists (optional, but good practice)
+                    const existingStudent = students.find(student => student.name === name);
+                    if (!existingStudent) {
+                        newStudents.push({
+                            id: generateUniqueId(),
+                            name: name,
+                            score: 0,
+                            // Get a unique emoji considering existing and new students
+                            emoji: getRandomUniqueEmoji([...usedEmojis, ...newStudents.map(s => s.emoji)]),
+                            color: getRandomColor(students.map(s => s.color)), // Pass existing colors
+                        });
+                    } else {
+                        console.warn(`Student with name "${name}" already exists.`);
+                        // Optionally provide user feedback here
+                    }
+                });
+
+                if (newStudents.length > 0) {
+                    // Sort the new students alphabetically by name before adding
+                    newStudents.sort((a, b) => a.name.localeCompare(b.name));
+
+                    students = [...students, ...newStudents];
+                    studentNameInput.value = ''; // Clear the textarea
+                    saveStudents();
+                    renderLeaderboard();
+                }
+            }
+        }
+
+        // Handle CSV file selection and parsing
+        function handleCsvUpload(event) {
+            const file = event.target.files[0];
+            parsedCsvStudents = []; // Clear previous parsed data
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+                    // Temporarily store parsed data without assigning emojis/colors yet
+                    parsedCsvStudents = lines.map(line => {
+                        const [name, scoreStr] = line.split(',').map(item => item.trim());
+                        const score = parseInt(scoreStr, 10) || 0;
+                        return {
+                            id: generateUniqueId(),
+                            name: name || 'Unnamed',
+                            score: score,
+                            emoji: null, // Will be assigned later
+                            color: null, // Will be assigned later
+                        };
+                    });
+                    // Enable the "Add CSV Students" button
+                    addCsvStudentsBtn.disabled = false;
+                };
+                reader.readAsText(file);
+            } else {
+                 // Disable the button if no file is selected
+                 addCsvStudentsBtn.disabled = true;
+            }
+        }
+
+        // Handle adding students from parsed CSV data
+        function handleAddCsvStudents() {
+            if (parsedCsvStudents.length > 0) {
+                const usedEmojis = students.map(s => s.emoji);
+                const currentUsedColors = students.map(s => s.color); // Get colors already in use
+
+                const newStudentsWithDetails = parsedCsvStudents.map(student => ({
+                    ...student,
+                    // Assign unique emoji and color now, considering existing and new students
+                    emoji: getRandomUniqueEmoji([...usedEmojis, ...parsedCsvStudents.map(s => s.emoji)]),
+                    color: getRandomColor(currentUsedColors), // Pass existing colors
+                }));
+
+                // Sort the new students alphabetically by name
+                newStudentsWithDetails.sort((a, b) => a.name.localeCompare(b.name));
+
+                students = [...students, ...newStudentsWithDetails];
+                parsedCsvStudents = []; // Clear temporary data
+                csvUploadInput.value = ''; // Clear the file input
+                addCsvStudentsBtn.disabled = true; // Disable the button again
+                saveStudents();
+                renderLeaderboard();
+            }
+        }
+
+        // Handle incrementing score (takes the button element)
+        function handleIncrement(button) {
+            const studentId = button.dataset.id;
+            students = students.map(student =>
+                student.id === studentId ? { ...student, score: student.score + 1 } : student
+            );
+            saveStudents();
+            renderLeaderboard();
+        }
+
+        // Handle decrementing score (takes the button element)
+        function handleDecrement(button) {
+            const studentId = button.dataset.id;
+            students = students.map(student =>
+                student.id === studentId ? { ...student, score: Math.max(0, student.score - 1) } : student
+            );
+            saveStudents();
+            renderLeaderboard();
+        }
+
+        // Handle resetting the leaderboard
+        function handleReset() {
+            if (confirm('Are you sure you want to reset the leaderboard? This will clear all current student data.')) {
+                students = []; // Clear the students array
+                saveStudents(); // Save the empty array
+                renderLeaderboard(); // Render the empty leaderboard
+            }
+        }
+
+        // Handle saving the current leaderboard as a template (removed confirm)
+        function handleSaveTemplate() {
+            const templateName = templateNameInput.value.trim();
+            if (templateName) {
+                templates[templateName] = JSON.parse(JSON.stringify(students));
+                saveTemplates();
+                renderTemplateList();
+                templateNameInput.value = ''; // Clear the input field
+            } else {
+                // Optionally provide user feedback here if template name is empty
+            }
+        }
+
+        // Handle loading a selected template (removed confirm)
+        function handleLoadTemplate() {
+            const templateName = templateSelect.value;
+            if (templateName && templates[templateName]) {
+                students = JSON.parse(JSON.stringify(templates[templateName]));
+                saveStudents(); // Save the newly loaded template as the current leaderboard
+                renderLeaderboard();
+            } else {
+                 // Optionally provide user feedback here if no template is selected
+            }
+        }
+
+        // Handle deleting a selected template (removed confirm)
+        function handleDeleteTemplate() {
+             const templateName = templateSelect.value;
+             if (templateName && templates[templateName]) {
+                 delete templates[templateName]; // Remove from the templates object
+                 saveTemplates(); // Save the updated templates object
+                 renderTemplateList(); // Update the dropdown
+                 // If the deleted template was the one currently loaded, clear the current leaderboard
+                 // This check might be slightly off if the template content is identical but not the exact same object reference
+                 // A safer approach might be to check if the current students array is *empty* after deletion,
+                 // or add a flag for the currently loaded template. For simplicity, keeping the current check.
+                 if (JSON.stringify(students) === JSON.stringify(templates[templateName])) {
+                      students = [];
+                      saveStudents();
+                      renderLeaderboard();
+                 }
+             } else {
+                  // Optionally provide user feedback here if no template is selected
+             }
+        }
+
+        // Enable/disable load/delete buttons based on select value
+        templateSelect.addEventListener('change', () => {
+            const selectedTemplate = templateSelect.value;
+            loadTemplateBtn.disabled = !selectedTemplate;
+            deleteTemplateBtn.disabled = !selectedTemplate;
+        });
+
+
+        // Add event listeners
+        addStudentBtn.addEventListener('click', handleAddStudent);
+        csvUploadInput.addEventListener('change', handleCsvUpload);
+        addCsvStudentsBtn.addEventListener('click', handleAddCsvStudents);
+        resetLeaderboardBtn.addEventListener('click', handleReset); // Event listener for reset button
+
+        // Template button event listeners
+        saveTemplateBtn.addEventListener('click', handleSaveTemplate);
+        loadTemplateBtn.addEventListener('click', handleLoadTemplate);
+        deleteTemplateBtn.addEventListener('click', handleDeleteTemplate);
+
+
+        // Load students and templates when the page loads
+        window.onload = () => {
+            loadStudents();
+            loadTemplates();
+        };
+
+    </script>
+</body>
+</html>

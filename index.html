@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Leaderboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Include Inter font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
@@ -15,12 +18,12 @@
         /* Custom styles for the pill shape */
         .student-pill {
             background-color: #ccc; /* Default fallback */
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-            color: white; /* Ensure text color is white by default on colored pills */
+            transition: transform 0.7s ease-in-out, opacity 0.5s ease-out, box-shadow 0.3s ease, background-color 0.3s ease;
+            color: white; /* Ensure text color is white by default on colored pills - overridden by JS for contrast */
             font-weight: 600; /* Equivalent to font-semibold */
             display: flex; /* Equivalent to flex */
             align-items: center; /* Equivalent to items-center */
-            justify-content: space-between; /* Equivalent to justify-between */
+            justify-content: flex-start; /* Aligned to start, no buttons here */
             padding: 0.75rem 1.5rem; /* Equivalent to p-3 */
             margin-top: 0.5rem; /* Equivalent to my-2 */
             margin-bottom: 0.5rem; /* Equivalent to my-2 */
@@ -28,6 +31,11 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Equivalent to shadow-md */
             font-size: 1.25rem; /* Equivalent to text-lg */
         }
+        /* Add text-shadow for better readability on colored backgrounds */
+        .student-pill span {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+        }
+
         /* Hover effect for pills */
         .student-pill:hover {
             transform: translateY(-3px) scale(1.01);
@@ -53,18 +61,19 @@
             opacity: 1;
             margin-left: 0.5rem;
             font-weight: 700;
-            color: #333; /* Darker text for contrast on a light badge */
+            /* Text color for badge will be set by JS for contrast */
             background-color: rgba(255, 255, 255, 0.9);
             padding: 0.1rem 0.4rem;
             border-radius: 9999px;
             display: inline-block;
+            text-shadow: none; /* No shadow on badge itself */
         }
 
-        /* Make score buttons wider */
+        /* Make score buttons wider (for sidebar buttons) */
         .score-button {
-             padding: 0.5rem 1rem;
-             font-size: 1.5rem; /* Increased font size */
-             min-width: 2.5rem;
+             padding: 0.3rem 0.6rem; /* Reduced padding for smaller height */
+             font-size: 1rem; /* Adjusted font size for smaller buttons */
+             min-width: 2rem; /* Adjusted min-width for smaller buttons */
              display: flex;
              justify-content: center;
              align-items: center;
@@ -90,16 +99,13 @@
         }
 
          .student-pill .score-area {
-             margin-left: 0.25rem;
-             margin-right: 0.5rem;
+             margin-left: auto; /* Push score to the right */
+             margin-right: 0;
              flex-shrink: 0;
              font-size: 1.25rem; /* Equivalent to text-xl */
          }
 
-         .student-pill .button-area {
-             margin-left: 1rem;
-             flex-shrink: 0;
-         }
+         /* .student-pill .button-area will be removed from pills */
 
          /* Adjust spacing on the emoji */
          .student-pill .emoji-span {
@@ -126,7 +132,7 @@
              align-items: center;
              text-align: center;
              box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-             transition: transform 0.3s ease, box-shadow 0.3s ease;
+             transition: all 0.7s ease-in-out;
              flex-shrink: 0;
          }
          /* Hover effect for top 3 cards */
@@ -195,132 +201,183 @@
              margin-top: 0.5rem;
          }
 
-         /* Ensure text color is visible for ranks 4 and 5 pills */
-         .rank-4 span, .rank-5 span,
-         .rank-4 .rank-badge, .rank-5 .rank-badge {
-             color: #333; /* Dark gray text for better contrast */
+         /* Right Sidebar specific styles */
+         .right-sidebar {
+             flex-grow: 0; /* Prevent it from growing */
+             flex-shrink: 0; /* Prevent it from shrinking */
+             max-width: 300px; /* Maximum width to prevent it from getting too wide */
+             width: auto; /* Allow width to be determined by content */
+             padding: 1rem;
+             background-color: #ffffff;
+             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+             overflow-y: auto;
+         }
+         .right-sidebar-item {
+             background-color: #e9ecef; /* Default background, will be overridden by JS */
+             border-radius: 0.25rem; /* Slightly less rounded for compactness */
+             padding: 0.4rem 0.6rem; /* Reduced padding for smaller height */
+             margin-bottom: 0.4rem; /* Reduced margin-bottom */
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
+             transition: background-color 0.2s ease;
+         }
+         /* Text and button color will be set dynamically by JS for contrast */
+         .right-sidebar-item .student-name-sidebar,
+         .right-sidebar-item .score-button {
+             /* color set by JS for contrast */
+             text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Text shadow for sidebar items */
          }
 
-
+         .right-sidebar-item:hover {
+             filter: brightness(1.1); /* Slightly brighten on hover */
+         }
+         .right-sidebar-item .student-name-sidebar {
+             font-weight: 500; /* Slightly lighter font weight */
+             font-size: 0.9rem; /* Smaller font size for name */
+             flex-grow: 1;
+             white-space: nowrap;
+             overflow: visible; /* Allow content to overflow for dynamic width */
+             text-overflow: clip; /* Clip overflow, but content pushes width */
+             margin-right: 0.5rem;
+         }
     </style>
 </head>
-<body class="d-flex vh-100 bg-light"> <div class="d-flex flex-column bg-white p-4 shadow-sm" style="width: 250px; min-width: 250px; overflow-y: auto;">
-        <h2 class="fs-4 fw-bold mb-4 text-dark">Controls</h2>
+<body class="d-flex vh-100 bg-light">
+    <!-- Main Container (Left Sidebar, Main Content, Right Sidebar) -->
+    <div class="d-flex flex-grow-1">
+        <!-- Left Sidebar -->
+        <div class="d-flex flex-column bg-white p-4 shadow-sm" style="width: 250px; min-width: 250px; overflow-y: auto;">
+            <h2 class="fs-4 fw-bold mb-4 text-dark">Controls</h2>
 
-        <div class="mb-4 pb-3 border-bottom border-light">
-            <label for="studentName" class="form-label text-secondary fw-bold mb-2">Add Student(s):</label>
-            <textarea
-                id="studentName"
-                placeholder="Enter student name(s), one per line"
-                class="form-control mb-2"
-                aria-label="Enter new student name(s), one per line"
-                rows="4"
-            ></textarea>
-            <button
-                id="addStudentBtn"
-                class="btn btn-primary fw-bold w-100"
-                aria-label="Add student(s)"
-            >
-                Add Student(s)
-            </button>
-        </div>
-
-        <div class="mb-4 pb-3 border-bottom border-light">
-            <label for="csvUpload" class="form-label text-secondary fw-bold mb-2">Upload CSV:</label>
-            <input
-                type="file"
-                id="csvUpload"
-                accept=".csv"
-                class="form-control mb-2"
-                aria-label="Select CSV file"
-            />
-            <button
-                id="addCsvStudentsBtn"
-                class="btn btn-success fw-bold w-100"
-                aria-label="Add students from CSV"
-                disabled
-            >
-                Add CSV Students
-            </button>
-            <p class="text-muted small mt-1">Format: name,score (one per line)</p>
-        </div>
-
-        <div class="mb-4 pb-3 border-bottom border-light">
-             <h3 class="fs-5 fw-bold mb-3 text-dark">Templates</h3>
-             <label for="templateName" class="form-label text-secondary fw-bold mb-2">Template Name:</label>
-             <input
-                 type="text"
-                 id="templateName"
-                 placeholder="Enter template name"
-                 class="form-control mb-2"
-                 aria-label="Enter template name"
-             />
-             <button
-                 id="saveTemplateBtn"
-                 class="btn btn-warning fw-bold w-100 mb-3"
-                 aria-label="Save current leaderboard as template"
-             >
-                 Save Template
-             </button>
-
-             <label for="templateSelect" class="form-label text-secondary fw-bold mb-2">Load Template:</label>
-             <select
-                 id="templateSelect"
-                 class="form-select mb-2"
-                 aria-label="Select a template to load"
-             >
-                 <option value="">--Select Template--</option>
-             </select>
-             <button
-                 id="loadTemplateBtn"
-                 class="btn btn-info fw-bold w-100 mb-2"
-                 aria-label="Load selected template"
-                 disabled
-             >
-                 Load Template
-             </button>
-             <button
-                 id="deleteTemplateBtn"
-                 class="btn btn-danger fw-bold w-100"
-                 aria-label="Delete selected template"
-                 disabled
-             >
-                 Delete Template
-             </button>
-        </div>
-
-        <div class="mt-auto pt-4 border-top border-light">
-             <button
-                 id="resetLeaderboardBtn"
-                 class="btn btn-secondary fw-bold w-100"
-                 aria-label="Reset leaderboard"
-             >
-                 Reset Leaderboard
-             </button>
-        </div>
-
-    </div>
-
-    <div class="flex-grow-1 p-4 overflow-y-auto">
-        <h1 class="fs-2 fw-bold mb-4 text-dark text-center">Leaderboard</h1>
-
-        <div id="top3Container" class="d-flex justify-content-center gap-3 mb-4 mx-auto" style="max-width: 900px;">
+            <!-- Add Student Form -->
+            <div class="mb-4 pb-3 border-bottom border-light">
+                <label for="studentName" class="form-label text-secondary fw-bold mb-2">Add Student(s):</label>
+                <textarea
+                    id="studentName"
+                    placeholder="Enter student name(s), one per line"
+                    class="form-control mb-2"
+                    aria-label="Enter new student name(s), one per line"
+                    rows="4"
+                ></textarea>
+                <button
+                    id="addStudentBtn"
+                    class="btn btn-primary fw-bold w-100"
+                    aria-label="Add student(s)"
+                >
+                    Add Student(s)
+                </button>
             </div>
-         <p id="noTop3Message" class="text-center text-muted mb-4 d-none">Add more students to see the Top 3!</p>
 
+            <!-- Upload CSV -->
+            <div class="mb-4 pb-3 border-bottom border-light">
+                <label for="csvUpload" class="form-label text-secondary fw-bold mb-2">Upload CSV:</label>
+                <input
+                    type="file"
+                    id="csvUpload"
+                    accept=".csv"
+                    class="form-control mb-2"
+                    aria-label="Select CSV file"
+                />
+                <button
+                    id="addCsvStudentsBtn"
+                    class="btn btn-success fw-bold w-100"
+                    aria-label="Add students from CSV"
+                    disabled
+                >
+                    Add CSV Students
+                </button>
+                <p class="text-muted small mt-1">Format: name,score (one per line)</p>
+            </div>
 
-        <div id="leaderboardList" class="mx-auto" style="max-width: 600px;">
-            <p id="noStudentsMessage" class="text-center text-muted">No students added yet. Add students using the controls on the left.</p>
+            <!-- Templates Section -->
+            <div class="mb-4 pb-3 border-bottom border-light">
+                 <h3 class="fs-5 fw-bold mb-3 text-dark">Templates</h3>
+                 <label for="templateName" class="form-label text-secondary fw-bold mb-2">Template Name:</label>
+                 <input
+                     type="text"
+                     id="templateName"
+                     placeholder="Enter template name"
+                     class="form-control mb-2"
+                     aria-label="Enter template name"
+                 />
+                 <button
+                     id="saveTemplateBtn"
+                     class="btn btn-warning fw-bold w-100 mb-3"
+                     aria-label="Save current leaderboard as template"
+                 >
+                     Save Template
+                 </button>
+
+                 <label for="templateSelect" class="form-label text-secondary fw-bold mb-2">Load Template:</label>
+                 <select
+                     id="templateSelect"
+                     class="form-select mb-2"
+                     aria-label="Select a template to load"
+                 >
+                     <option value="">--Select Template--</option>
+                 </select>
+                 <button
+                     id="loadTemplateBtn"
+                     class="btn btn-info fw-bold w-100 mb-2"
+                     aria-label="Load selected template"
+                     disabled
+                 >
+                     Load Template
+                 </button>
+                 <button
+                     id="deleteTemplateBtn"
+                     class="btn btn-danger fw-bold w-100"
+                     aria-label="Delete selected template"
+                     disabled
+                 >
+                     Delete Template
+                 </button>
+            </div>
+
+            <div class="mt-auto pt-4 border-top border-light">
+                 <button
+                     id="resetLeaderboardBtn"
+                     class="btn btn-secondary fw-bold w-100"
+                     aria-label="Reset leaderboard"
+                 >
+                     Reset Leaderboard
+                 </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4 overflow-y-auto">
+            <h1 class="fs-2 fw-bold mb-4 text-dark text-center">Leaderboard</h1>
+
+            <!-- Top 3 Horizontal Cards Section -->
+            <div id="top3Container" class="d-flex justify-content-center gap-3 mb-4 mx-auto" style="max-width: 900px;">
+                </div>
+             <p id="noTop3Message" class="text-center text-muted mb-4 d-none">Add more students to see the Top 3!</p>
+
+            <div id="leaderboardList" class="mx-auto" style="max-width: 600px;">
+                <p id="noStudentsMessage" class="text-center text-muted">No students added yet. Add students using the controls on the left.</p>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="d-flex flex-column bg-white shadow-sm right-sidebar">
+            <h2 class="fs-4 fw-bold mb-4 text-dark p-4">Score Adjustments</h2>
+            <div id="scoreAdjustmentList" class="flex-grow-1 px-4 pb-4">
+                <!-- Score adjustment items will be rendered here -->
+                <p id="noAdjustmentStudentsMessage" class="text-center text-muted small">Add students to adjust scores.</p>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
         // Kid-safe emojis list - Updated with more variety including unicorn
         const kidSafeEmojis = [
             '👍', '🎉', '🌟', '🌈', '🚀', '🐱',
-            '🐶', '🐻', '🐼', '🦊', '🦁', '🐯', '🐸', '🐠', '🦋', 
+            '🐶', '🐻', '🐼', '🦊', '🦁', '🐯', '�', '🐠', '🦋', 
             '🌸', '🌻', '🌳', '🦄', '✨', '🎁', '🏆',
             '👑', '💎', '💫',  '🎀', '🎊', '☀️', '🎊', '🎉', 
         ];
@@ -334,6 +391,73 @@
             }
             const randomIndex = Math.floor(Math.random() * availableEmojis.length);
             return availableEmojis[randomIndex];
+        }
+
+        // Function to convert HSL to RGB
+        function hslToRgb(h, s, l) {
+            s /= 100;
+            l /= 100;
+            let c = (1 - Math.abs(2 * l - 1)) * s,
+                x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
+                m = l - c / 2,
+                r = 0,
+                g = 0,
+                b = 0;
+
+            if (0 <= h && h < 60) {
+                r = c;
+                g = x;
+                b = 0;
+            } else if (60 <= h && h < 120) {
+                r = x;
+                g = c;
+                b = 0;
+            } else if (120 <= h && h < 180) {
+                r = 0;
+                g = c;
+                b = x;
+            } else if (180 <= h && h < 240) {
+                r = 0;
+                g = x;
+                b = c;
+            } else if (240 <= h && h < 300) {
+                r = x;
+                g = 0;
+                b = c;
+            } else if (300 <= h && h < 360) {
+                r = c;
+                g = 0;
+                b = x;
+            }
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+
+            return [r, g, b];
+        }
+
+        // Function to calculate relative luminance
+        function getRelativeLuminance(r, g, b) {
+            const sRGB = [r, g, b].map(val => {
+                val /= 255;
+                return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
+        }
+
+        // Function to determine text color (black or white) based on background color
+        function getContrastingTextColor(hslColor) {
+            const matches = hslColor.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+            if (!matches) return 'white'; // Default to white if parsing fails
+
+            const h = parseInt(matches[1]);
+            const s = parseInt(matches[2]);
+            const l = parseInt(matches[3]);
+
+            const [r, g, b] = hslToRgb(h, s, l);
+            const luminance = getRelativeLuminance(r, g, b);
+
+            return luminance > 0.4 ? '#333' : 'white'; // If light background, use dark text. Otherwise, use white.
         }
 
         // Function to generate a random bright color with better contrast for white text
@@ -369,6 +493,9 @@
         const noStudentsMessage = document.getElementById('noStudentsMessage');
         const noTop3Message = document.getElementById('noTop3Message'); // Message for not enough students for Top 3
         const resetLeaderboardBtn = document.getElementById('resetLeaderboardBtn');
+        const scoreAdjustmentList = document.getElementById('scoreAdjustmentList'); // Reference for the new right sidebar list
+        const noAdjustmentStudentsMessage = document.getElementById('noAdjustmentStudentsMessage');
+
 
         // Template elements
         const templateNameInput = document.getElementById('templateName');
@@ -393,7 +520,7 @@
             if (savedStudents) {
                 students = JSON.parse(savedStudents);
             }
-            renderLeaderboard();
+            renderAllSections(); // Call a master render function
         }
 
         // Save students to local storage (current leaderboard)
@@ -415,110 +542,218 @@
             localStorage.setItem('leaderboardTemplates', JSON.stringify(templates));
         }
 
-        // --- Rendering Functions ---
+        // Helper function to create a student pill element for the main leaderboard
+        function createLeaderboardPillElement(student, rank) {
+            const studentPill = document.createElement('div');
+            studentPill.classList.add('student-pill', 'mb-2', 'shadow-sm');
+            studentPill.dataset.id = student.id; // Store ID for FLIP animation
 
-        // Render the leaderboard
-        function renderLeaderboard() {
-            // Sort students by score in descending order
+            // Apply rank-specific classes for ranks 4 and 5
+            if (rank <= 5) {
+                 studentPill.classList.add(`rank-${rank}`);
+            }
+
+            studentPill.style.backgroundColor = student.color;
+            // Set text color dynamically based on background for contrast
+            studentPill.style.color = getContrastingTextColor(student.color);
+            studentPill.setAttribute('aria-label', `Leaderboard entry for ${student.name}, Rank ${rank}`);
+
+            let rankText = '';
+            if (rank === 4) rankText = '4th Place';
+            else if (rank === 5) rankText = '5th Place';
+
+            studentPill.innerHTML = `
+                <span class="emoji-span me-2" role="img" aria-label="student emoji" style="font-size: 2rem;">${student.emoji}</span>
+                <span class="content-area">${student.name} ${rankText ? `<span class="rank-badge" style="color: ${getContrastingTextColor('rgba(255, 255, 255, 0.9)')}">${rankText}</span>` : ''}</span>
+                <span class="score-area">${student.score}</span>
+            `;
+            return studentPill;
+        }
+
+        // Function to render the main leaderboard section
+        function renderMainLeaderboard() {
             const sortedStudents = [...students].sort((a, b) => b.score - a.score);
 
-            leaderboardList.innerHTML = ''; // Clear current regular list
-            top3Container.innerHTML = ''; // Clear current top 3 list
+            // Clear containers unconditionally before rendering
+            leaderboardList.innerHTML = '';
+            top3Container.innerHTML = '';
+
+            // --- FLIP: First (Capture positions) for pills ---
+            const oldRects = new Map();
+            const currentPills = new Map();
+
+            // Only query if there are potentially existing elements, otherwise no need
+            if (students.length > 0) {
+                leaderboardList.querySelectorAll('.student-pill').forEach(pill => {
+                    const id = pill.dataset.id;
+                    oldRects.set(id, pill.getBoundingClientRect());
+                    currentPills.set(id, pill);
+                });
+            }
+
 
             if (sortedStudents.length === 0) {
-                noStudentsMessage.classList.remove('d-none'); // Show message
-                noTop3Message.classList.add('d-none'); // Hide top 3 message if no students
+                noStudentsMessage.classList.remove('d-none');
+                noTop3Message.classList.add('d-none');
             } else {
-                noStudentsMessage.classList.add('d-none'); // Hide message
+                noStudentsMessage.classList.add('d-none');
 
-                // Separate top 3 and the rest
                 const top3Students = sortedStudents.slice(0, 3);
                 const remainingStudents = sortedStudents.slice(3);
 
                 // Render Top 3 Cards
                 if (top3Students.length >= 3) {
-                    noTop3Message.classList.add('d-none'); // Hide message if top 3 exists
+                    noTop3Message.classList.add('d-none');
                     top3Students.forEach((student, index) => {
                         const rank = index + 1;
                         let rankBadgeEmoji = '';
-                        // Use emoji badges for ranks 1, 2, 3
-                        if (rank === 1) rankBadgeEmoji = '🥇'; // Gold medal
-                        else if (rank === 2) rankBadgeEmoji = '🥈'; // Silver medal
-                        else if (rank === 3) rankBadgeEmoji = '🥉'; // Bronze medal
+                        if (rank === 1) rankBadgeEmoji = '🥇';
+                        else if (rank === 2) rankBadgeEmoji = '🥈';
+                        else if (rank === 3) rankBadgeEmoji = '🥉';
 
                         const top3Card = document.createElement('div');
-                        // Using Bootstrap classes for layout and styling
                         top3Card.classList.add('top-3-card', `rank-${rank}`, 'card', 'p-3', 'text-center');
                         top3Card.setAttribute('aria-label', `Leaderboard entry for ${student.name}, Rank ${rank}`);
-
 
                         top3Card.innerHTML = `
                             <div class="rank-icon">${rankBadgeEmoji}</div>
                             <span class="student-emoji display-4">${student.emoji}</span>
                             <span class="student-name h5 fw-bold text-dark">${student.name}</span>
                             <span class="student-score text-muted fs-5">Score: ${student.score}</span>
-                            <div class="button-area d-flex justify-content-center gap-2 mt-2">
-                                <button class="increment-btn score-button" data-id="${student.id}" aria-label="Increment score for ${student.name}">+</button>
-                                <button class="decrement-btn score-button" data-id="${student.id}" aria-label="Decrement score for ${student.name}">-</button>
-                            </div>
                         `;
                         top3Container.appendChild(top3Card);
                     });
                 } else {
-                     noTop3Message.classList.remove('d-none'); // Show message if not enough students for Top 3
+                     noTop3Message.classList.remove('d-none');
                 }
 
+                // --- FLIP: Last (Update DOM for pills to new order) ---
+                const newPillsInOrder = [];
+                const fragment = document.createDocumentFragment();
 
-                // Render Remaining Students (Rank 4 onwards)
                 remainingStudents.forEach((student, index) => {
-                    const studentPill = document.createElement('div');
-                    const rank = index + 4; // Start rank from 4 for remaining students
+                    let pillElement = currentPills.get(student.id);
 
-                    // Add base pill classes
-                    studentPill.classList.add('student-pill'); // Custom class for pill styling
+                    if (pillElement) {
+                        // Update existing pill's content
+                        pillElement.querySelector('.score-area').textContent = student.score;
+                        pillElement.querySelector('.emoji-span').textContent = student.emoji;
+                        pillElement.style.backgroundColor = student.color;
+                        pillElement.style.color = getContrastingTextColor(student.color); // Update text color
 
-                    // Apply rank-specific classes for ranks 4 and 5 (if they exist in remaining)
-                    if (rank <= 5) {
-                         studentPill.classList.add(`rank-${rank}`);
+                        const rankTextSpan = pillElement.querySelector('.rank-badge');
+                        const rank = index + 4;
+                        let rankText = '';
+                        if (rank === 4) rankText = '4th Place';
+                        else if (rank === 5) rankText = '5th Place';
+
+                        if (rankText && !rankTextSpan) {
+                            const newRankBadge = document.createElement('span');
+                            newRankBadge.classList.add('rank-badge');
+                            newRankBadge.textContent = rankText;
+                            newRankBadge.style.color = getContrastingTextColor('rgba(255, 255, 255, 0.9)'); // Set badge text color
+                            pillElement.querySelector('.content-area').appendChild(newRankBadge);
+                        } else if (rankTextSpan) {
+                            rankTextSpan.textContent = rankText;
+                            rankTextSpan.style.color = getContrastingTextColor('rgba(255, 255, 255, 0.9)'); // Update badge text color
+                        } else if (!rankText && rankTextSpan) {
+                            rankTextSpan.remove();
+                        }
+
+                        newPillsInOrder.push(pillElement);
+                        currentPills.delete(student.id); // Mark as processed
+                    } else {
+                        // New student, create new pill
+                        pillElement = createLeaderboardPillElement(student, index + 4);
+                        pillElement.style.opacity = '0'; // Start invisible for fade-in
+                        newPillsInOrder.push(pillElement);
                     }
-
-                    studentPill.style.backgroundColor = student.color;
-                    studentPill.setAttribute('aria-label', `Leaderboard entry for ${student.name}, Rank ${rank}`);
-
-                    // Determine rank text for ranks 4 and 5
-                    let rankText = '';
-                    if (rank === 4) rankText = '4th Place';
-                    else if (rank === 5) rankText = '5th Place';
-
-
-                    studentPill.innerHTML = `
-                        <span class="emoji-span me-2" role="img" aria-label="student emoji" style="font-size: 2rem;">${student.emoji}</span>
-                        <span class="content-area">${student.name} ${rankText ? `<span class="rank-badge">${rankText}</span>` : ''}</span>
-                        <span class="score-area">${student.score}</span>
-                        <div class="button-area d-flex gap-2">
-                            <button class="increment-btn score-button" data-id="${student.id}" aria-label="Increment score for ${student.name}">+</button>
-                            <button class="decrement-btn score-button" data-id="${student.id}" aria-label="Decrement score for ${student.name}">-</button>
-                        </div>
-                    `;
-
-                    leaderboardList.appendChild(studentPill);
                 });
 
-                 // Add event listeners using delegation to the main content area
-                 const mainContent = document.querySelector('.flex-grow-1'); // Get the main content area
-                 mainContent.removeEventListener('click', handleScoreButtonClick); // Prevent duplicate listeners
-                 mainContent.addEventListener('click', handleScoreButtonClick);
+                // Append elements in the new order
+                newPillsInOrder.forEach(pill => fragment.appendChild(pill));
+                leaderboardList.appendChild(fragment); // Append the new order
 
+                // Remove any remaining old pills (deleted students or moved to top 3)
+                currentPills.forEach(pill => {
+                    pill.style.opacity = '0'; // Fade out
+                    pill.addEventListener('transitionend', () => pill.remove(), { once: true });
+                });
+
+                // --- FLIP: Invert & Play ---
+                requestAnimationFrame(() => {
+                    newPillsInOrder.forEach(pill => {
+                        const newRect = pill.getBoundingClientRect();
+                        const oldRect = oldRects.get(pill.dataset.id);
+
+                        if (oldRect) {
+                            const deltaX = oldRect.left - newRect.left;
+                            const deltaY = oldRect.top - newRect.top;
+                            pill.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        }
+                        pill.style.opacity = '1';
+                    });
+
+                    leaderboardList.offsetHeight; // Force reflow
+
+                    requestAnimationFrame(() => {
+                        newPillsInOrder.forEach(pill => {
+                            pill.style.transform = '';
+                        });
+                    });
+                });
             }
         }
 
-         // Delegated event handler for score buttons
-         function handleScoreButtonClick(event) {
+        // Function to render the right sidebar with score adjustment controls
+        function renderRightSidebarControls() {
+            scoreAdjustmentList.innerHTML = ''; // Clear current list
+
+            if (students.length === 0) {
+                noAdjustmentStudentsMessage.classList.remove('d-none');
+            } else {
+                noAdjustmentStudentsMessage.classList.add('d-none');
+                // Sort students alphabetically for the sidebar
+                const sortedForSidebar = [...students].sort((a, b) => a.name.localeCompare(b.name));
+
+                sortedForSidebar.forEach(student => {
+                    const controlItem = document.createElement('div');
+                    controlItem.classList.add('right-sidebar-item');
+                    controlItem.dataset.id = student.id; // Store ID for event delegation
+                    controlItem.style.backgroundColor = student.color; // Match the pill color!
+                    controlItem.style.color = getContrastingTextColor(student.color); // Set text color dynamically for contrast
+
+                    controlItem.innerHTML = `
+                        <span class="student-name-sidebar">${student.name}</span>
+                        <div class="d-flex gap-1">
+                            <button class="increment-btn score-button btn btn-sm" style="color: ${getContrastingTextColor(student.color)}; border-color: ${getContrastingTextColor(student.color)};" data-id="${student.id}" aria-label="Increment score for ${student.name}">+</button>
+                            <button class="decrement-btn score-button btn btn-sm" style="color: ${getContrastingTextColor(student.color)}; border-color: ${getContrastingTextColor(student.color)};" data-id="${student.id}" aria-label="Decrement score for ${student.name}">-</button>
+                        </div>
+                    `;
+                    scoreAdjustmentList.appendChild(controlItem);
+                });
+
+                // Attach event listeners for buttons in the right sidebar
+                scoreAdjustmentList.removeEventListener('click', handleScoreAdjustmentButtonClick); // Prevent duplicates
+                scoreAdjustmentList.addEventListener('click', handleScoreAdjustmentButtonClick);
+            }
+        }
+
+        // Master render function to update all dynamic sections
+        function renderAllSections() {
+            renderMainLeaderboard();
+            renderRightSidebarControls();
+        }
+
+        // Delegated event handler for score buttons in the right sidebar
+        function handleScoreAdjustmentButtonClick(event) {
              const target = event.target;
+             const studentId = target.dataset.id; 
+
              if (target.classList.contains('increment-btn')) {
-                 handleIncrement(target);
+                 handleIncrement(studentId);
              } else if (target.classList.contains('decrement-btn')) {
-                 handleDecrement(target);
+                 handleDecrement(studentId);
              }
          }
 
@@ -540,40 +775,35 @@
 
         // --- Event Handlers ---
 
-        // Handle adding a student manually (now handles multiple names and sorts alphabetically)
+        // Handle adding a student manually
         function handleAddStudent() {
             const namesText = studentNameInput.value.trim();
             if (namesText) {
-                const names = namesText.split('\n').map(name => name.trim()).filter(name => name !== ''); // Split by line breaks and filter empty names
+                const names = namesText.split('\n').map(name => name.trim()).filter(name => name !== '');
                 const newStudents = [];
-                const usedEmojis = students.map(s => s.emoji); // Get currently used emojis
+                const usedEmojis = students.map(s => s.emoji);
 
                 names.forEach(name => {
-                    // Check if a student with this name already exists (optional, but good practice)
-                    const existingStudent = students.find(student => student.name === name);
+                    const existingStudent = students.find(student => student.name.toLowerCase() === name.toLowerCase());
                     if (!existingStudent) {
                         newStudents.push({
                             id: generateUniqueId(),
                             name: name,
                             score: 0,
-                            // Get a unique emoji considering existing and new students
                             emoji: getRandomUniqueEmoji([...usedEmojis, ...newStudents.map(s => s.emoji)]),
-                            color: getRandomColor(students.map(s => s.color)), // Pass existing colors
+                            color: getRandomColor(students.map(s => s.color)),
                         });
                     } else {
                         console.warn(`Student with name "${name}" already exists.`);
-                        // Optionally provide user feedback here
                     }
                 });
 
                 if (newStudents.length > 0) {
-                    // Sort the new students alphabetically by name before adding
                     newStudents.sort((a, b) => a.name.localeCompare(b.name));
-
                     students = [...students, ...newStudents];
-                    studentNameInput.value = ''; // Clear the textarea
+                    studentNameInput.value = '';
                     saveStudents();
-                    renderLeaderboard();
+                    renderAllSections(); // Re-render all parts after adding
                 }
             }
         }
@@ -581,13 +811,12 @@
         // Handle CSV file selection and parsing
         function handleCsvUpload(event) {
             const file = event.target.files[0];
-            parsedCsvStudents = []; // Clear previous parsed data
+            parsedCsvStudents = [];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const text = e.target.result;
                     const lines = text.split('\n').filter(line => line.trim() !== '');
-                    // Temporarily store parsed data without assigning emojis/colors yet
                     parsedCsvStudents = lines.map(line => {
                         const [name, scoreStr] = line.split(',').map(item => item.trim());
                         const score = parseInt(scoreStr, 10) || 0;
@@ -595,16 +824,14 @@
                             id: generateUniqueId(),
                             name: name || 'Unnamed',
                             score: score,
-                            emoji: null, // Will be assigned later
-                            color: null, // Will be assigned later
+                            emoji: null,
+                            color: null,
                         };
                     });
-                    // Enable the "Add CSV Students" button
                     addCsvStudentsBtn.disabled = false;
                 };
                 reader.readAsText(file);
             } else {
-                 // Disable the button if no file is selected
                  addCsvStudentsBtn.disabled = true;
             }
         }
@@ -613,101 +840,158 @@
         function handleAddCsvStudents() {
             if (parsedCsvStudents.length > 0) {
                 const usedEmojis = students.map(s => s.emoji);
-                const currentUsedColors = students.map(s => s.color); // Get colors already in use
+                const currentUsedColors = students.map(s => s.color);
 
                 const newStudentsWithDetails = parsedCsvStudents.map(student => ({
                     ...student,
-                    // Assign unique emoji and color now, considering existing and new students
                     emoji: getRandomUniqueEmoji([...usedEmojis, ...parsedCsvStudents.map(s => s.emoji)]),
-                    color: getRandomColor(currentUsedColors), // Pass existing colors
+                    color: getRandomColor(currentUsedColors),
                 }));
 
-                // Sort the new students alphabetically by name
                 newStudentsWithDetails.sort((a, b) => a.name.localeCompare(b.name));
 
                 students = [...students, ...newStudentsWithDetails];
-                parsedCsvStudents = []; // Clear temporary data
-                csvUploadInput.value = ''; // Clear the file input
-                addCsvStudentsBtn.disabled = true; // Disable the button again
+                parsedCsvStudents = [];
+                csvUploadInput.value = '';
+                addCsvStudentsBtn.disabled = true;
                 saveStudents();
-                renderLeaderboard();
+                renderAllSections(); // Re-render all parts after adding
             }
         }
 
-        // Handle incrementing score (takes the button element)
-        function handleIncrement(button) {
-            const studentId = button.dataset.id;
+        // Handle incrementing score (takes the student ID)
+        function handleIncrement(studentId) {
             students = students.map(student =>
                 student.id === studentId ? { ...student, score: student.score + 1 } : student
             );
             saveStudents();
-            renderLeaderboard();
+            renderAllSections(); // Re-render all parts after score change
         }
 
-        // Handle decrementing score (takes the button element)
-        function handleDecrement(button) {
-            const studentId = button.dataset.id;
+        // Handle decrementing score (takes the student ID)
+        function handleDecrement(studentId) {
             students = students.map(student =>
                 student.id === studentId ? { ...student, score: Math.max(0, student.score - 1) } : student
             );
             saveStudents();
-            renderLeaderboard();
+            renderAllSections(); // Re-render all parts after score change
         }
 
         // Handle resetting the leaderboard
         function handleReset() {
-            if (confirm('Are you sure you want to reset the leaderboard? This will clear all current student data.')) {
-                students = []; // Clear the students array
-                saveStudents(); // Save the empty array
-                renderLeaderboard(); // Render the empty leaderboard
-            }
+            showConfirmationModal('Are you sure you want to reset the leaderboard? This will clear all current student data.', () => {
+                students = [];
+                saveStudents();
+                renderAllSections(); // Re-render all parts after reset
+            });
         }
 
-        // Handle saving the current leaderboard as a template (removed confirm)
+        // Handle saving the current leaderboard as a template
         function handleSaveTemplate() {
             const templateName = templateNameInput.value.trim();
             if (templateName) {
                 templates[templateName] = JSON.parse(JSON.stringify(students));
                 saveTemplates();
                 renderTemplateList();
-                templateNameInput.value = ''; // Clear the input field
+                templateNameInput.value = '';
             } else {
-                // Optionally provide user feedback here if template name is empty
+                showMessageModal('Please enter a name for the template.');
             }
         }
 
-        // Handle loading a selected template (removed confirm)
+        // Handle loading a selected template
         function handleLoadTemplate() {
             const templateName = templateSelect.value;
             if (templateName && templates[templateName]) {
                 students = JSON.parse(JSON.stringify(templates[templateName]));
-                saveStudents(); // Save the newly loaded template as the current leaderboard
-                renderLeaderboard();
+                saveStudents();
+                renderAllSections(); // Re-render all parts after loading
             } else {
-                 // Optionally provide user feedback here if no template is selected
+                 showMessageModal('Please select a template to load.');
             }
         }
 
-        // Handle deleting a selected template (removed confirm)
+        // Handle deleting a selected template
         function handleDeleteTemplate() {
              const templateName = templateSelect.value;
              if (templateName && templates[templateName]) {
-                 delete templates[templateName]; // Remove from the templates object
-                 saveTemplates(); // Save the updated templates object
-                 renderTemplateList(); // Update the dropdown
-                 // If the deleted template was the one currently loaded, clear the current leaderboard
-                 // This check might be slightly off if the template content is identical but not the exact same object reference
-                 // A safer approach might be to check if the current students array is *empty* after deletion,
-                 // or add a flag for the currently loaded template. For simplicity, keeping the current check.
-                 if (JSON.stringify(students) === JSON.stringify(templates[templateName])) {
-                      students = [];
-                      saveStudents();
-                      renderLeaderboard();
-                 }
+                 showConfirmationModal(`Are you sure you want to delete the template "${templateName}"?`, () => {
+                     delete templates[templateName];
+                     saveTemplates();
+                     renderTemplateList();
+                     if (JSON.stringify(students) === JSON.stringify(templates[templateName])) {
+                          students = [];
+                          saveStudents();
+                          renderAllSections(); // Re-render all parts after deletion if current
+                     }
+                 });
              } else {
-                  // Optionally provide user feedback here if no template is selected
+                  showMessageModal('Please select a template to delete.');
              }
         }
+
+        // --- Custom Modal Functions (Replaces alert/confirm) ---
+        function showMessageModal(message) {
+            const modalHtml = `
+                <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="messageModalLabel">Information</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${message}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+            messageModal.show();
+            document.getElementById('messageModal').addEventListener('hidden.bs.modal', function (event) {
+                event.target.remove();
+            });
+        }
+
+        function showConfirmationModal(message, onConfirm) {
+            const modalHtml = `
+                <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${message}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger" id="confirmActionButton">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmationModal.show();
+
+            document.getElementById('confirmActionButton').addEventListener('click', () => {
+                onConfirm();
+                confirmationModal.hide();
+            });
+
+            document.getElementById('confirmationModal').addEventListener('hidden.bs.modal', function (event) {
+                event.target.remove();
+            });
+        }
+
 
         // Enable/disable load/delete buttons based on select value
         templateSelect.addEventListener('change', () => {
@@ -721,7 +1005,7 @@
         addStudentBtn.addEventListener('click', handleAddStudent);
         csvUploadInput.addEventListener('change', handleCsvUpload);
         addCsvStudentsBtn.addEventListener('click', handleAddCsvStudents);
-        resetLeaderboardBtn.addEventListener('click', handleReset); // Event listener for reset button
+        resetLeaderboardBtn.addEventListener('click', handleReset);
 
         // Template button event listeners
         saveTemplateBtn.addEventListener('click', handleSaveTemplate);
@@ -738,3 +1022,4 @@
     </script>
 </body>
 </html>
+�
